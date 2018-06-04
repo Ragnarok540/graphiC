@@ -80,3 +80,65 @@ int randomGraph(int nodes, int edges, int seed,
 
     return 0;
 }
+
+void randomBipartiteGraph(int nodes1, int nodes2, int edges,
+                          int seed, int nodeI[], int nodeJ[]) {
+    int nodeA, nodeB, nodeC, numEdges = 0, numNodes = nodes1 + nodes2;
+    bool adj[numNodes][numNodes], temp;
+    srand(seed);
+    
+    for (nodeA = 0; nodeA < numNodes; nodeA++) {
+            for (nodeB = 0; nodeB < numNodes; nodeB++) {
+                adj[nodeA][nodeB] = false;
+        }
+    }
+    
+    if (edges != 0) {
+        if (edges > nodes1 * nodes2) edges = nodes1 * nodes2;
+        
+        while (numEdges < edges) {
+            nodeA = rand() % nodes1;
+            nodeB = rand() % nodes2 + nodes1;
+            
+            if (!adj[nodeA][nodeB]) {
+                adj[nodeA][nodeB] = adj[nodeB][nodeA] = true;
+                numEdges++;
+            }
+        }
+    } else {
+        for (nodeA = 0; nodeA < nodes1; nodeA++) {
+            for (nodeB = nodes1; nodeB < numNodes; nodeB++) {
+                temp = rand() % 2 == 0;
+                adj[nodeA][nodeB] = adj[nodeB][nodeA] = temp;
+            }
+        }
+    }
+    
+    for (nodeA = 0; nodeA < numNodes; nodeA++) {
+        nodeC = rand() % (numNodes - nodeA) + nodeA;
+        
+        for (nodeB = 0; nodeB < numNodes; nodeB++) {
+            temp = adj[nodeC][nodeB];
+            adj[nodeC][nodeB] = adj[nodeA][nodeB];
+            adj[nodeA][nodeB] = temp;
+        }
+        
+        for (nodeB = 0; nodeB < numNodes; nodeB++) {
+            temp = adj[nodeB][nodeC];
+            adj[nodeB][nodeC] = adj[nodeB][nodeA];
+            adj[nodeB][nodeA] = temp;
+        }
+    }
+    
+    numEdges = 0;
+    
+    for (nodeA = 0; nodeA < numNodes; nodeA++) {
+        for (nodeB = nodeA; nodeB < numNodes; nodeB++) {
+            if (adj[nodeA][nodeB]) {
+                nodeI[numEdges] = nodeA;
+                nodeJ[numEdges] = nodeB;
+                numEdges++;
+            }
+        }
+    }
+}
