@@ -1,2 +1,2 @@
-# graphiC
-graph library in C
+# graphr
+graph library for Rust
