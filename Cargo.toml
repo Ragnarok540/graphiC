@@ -5,4 +5,5 @@ authors = ["Edgar Nova <ragnarok540@gmail.com>"]
 edition = "2018"
 
 [dependencies]
+matrix = "0.22.0"
 rand = "0.7.0"
