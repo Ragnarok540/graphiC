@@ -45,19 +45,4 @@ fn main() {
     }
 
     println!("{}", settings.get_exit_on_esc());
-    
-    let mv = Tetromino::new('i');
-    let mut mv_2 = Tetromino::new('.');
-    
-    for i in 0..=3 {
-        for j in 0..=3 {
-            let idx = Direction::rotate(i, j, Direction::South);
-            *mv_2.body.vec_index_mut(idx) = *mv.body.index(i, j);
-        }
-    }
-
-    println!("Display:\n{}", mv_2.body);
-    println!("Debug:\n{:?}", mv_2.body);
-    println!("index: {}", mv_2.body.index(1, 2));
-    println!("index: {:?}", mv_2.body.row(1));
 }

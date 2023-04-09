@@ -193,7 +193,6 @@ impl TetrisView {
         //         }
         //     }
         // }
-
     }
 
     pub fn draw_block<G: Graphics>(

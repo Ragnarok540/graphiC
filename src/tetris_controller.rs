@@ -26,6 +26,8 @@ impl TetrisController {
                 Key::Left => self.tetris.h_move('l'),
                 Key::Right => self.tetris.h_move('r'),
                 Key::Down => self.tetris.v_move(),
+                Key::Up => self.tetris.tetromino.rotate_tetromino('r'),
+                Key::Space => self.tetris.tetromino.rotate_tetromino('l'),
                 _ => {}
             }
         }

@@ -1,5 +1,6 @@
 //! Tetris logic.
 
+use std::fmt;
 use std::fs::read_to_string;
 
 /// Horizontal size of the board.
@@ -32,7 +33,7 @@ impl Tetris {
     pub fn new() -> Tetris {
         Tetris {
             cells: [[Cell::default(); H_SIZE]; V_SIZE],
-            tetromino: Tetromino::new('z'),
+            tetromino: Tetromino::new('i'),
             position: [0.0, 4.0],
         }
     }
@@ -40,8 +41,8 @@ impl Tetris {
     /// Horizontal move.
     pub fn h_move(&mut self, dir: char) {
         match dir {
-            'l' => self.position[1] = self.position[1] - 1.0,
             'r' => self.position[1] = self.position[1] + 1.0,
+            'l' => self.position[1] = self.position[1] - 1.0,
             _ => {}
         }
     }
@@ -52,9 +53,7 @@ impl Tetris {
     }
 }
 
-use std::fmt;
-
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, PartialEq)]
 pub enum Direction {
      North,
      East,
@@ -93,13 +92,16 @@ impl Direction {
 
 #[derive(Debug, PartialEq)]
 pub struct Tetromino {
+    pub o_body: Vec2d<char>,
     pub body: Vec2d<char>,
     pub t_type: char,
+    /// Current direction.
+    pub direction: Direction,
 }
 
 impl Tetromino {
     pub fn new(t_type: char) -> Self {
-        let body = match t_type {
+        let o_body = match t_type {
             'o' => Tetromino::o_tetromino(),
             'i' => Tetromino::i_tetromino(),
             't' => Tetromino::t_tetromino(),
@@ -110,7 +112,17 @@ impl Tetromino {
             '.' => Tetromino::empty_tetromino(),
             _ => Tetromino::empty_tetromino(),
         };
-        Self {body, t_type}
+
+        let mut new_body = Vec2d::new(['.'; 16].to_vec(), 4, 4);
+        
+        for i in 0..=3 {
+            for j in 0..=3 {
+                let idx = Direction::rotate(i, j, Direction::North);
+                *new_body.vec_index_mut(idx) = *o_body.index(i, j);
+            }
+        }
+
+        Self {o_body, body: new_body, t_type, direction: Direction::North}
     }
 
     pub fn empty_tetromino() -> Vec2d<char> {
@@ -185,6 +197,26 @@ impl Tetromino {
             '.', '.', '.', '.',
         ];
         Vec2d::new(v.to_vec(), 4, 4)
+    }
+
+    /// Rotate tetromino
+    pub fn rotate_tetromino(&mut self, dir: char) {
+        match dir {
+            'r' => self.direction = Direction::clockwise(&self.direction),
+            'l' => self.direction = Direction::counterclockwise(&self.direction),
+            _ => {}
+        }
+        
+        let mut new_body = Vec2d::new(['.'; 16].to_vec(), 4, 4);
+        
+        for i in 0..=3 {
+            for j in 0..=3 {
+                let idx = Direction::rotate(i, j, self.direction);
+                *new_body.vec_index_mut(idx) = *self.o_body.index(i, j);
+            }
+        }
+
+        self.body = new_body;
     }
 }
 
